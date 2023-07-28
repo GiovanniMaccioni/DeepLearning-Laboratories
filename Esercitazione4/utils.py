@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
-from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay, confusion_matrix, ConfusionMatrixDisplay, roc_auc_score, roc_curve
 
 import models
 
@@ -122,13 +122,19 @@ def plot_ROC(logits_ID, logits_OOD, metric):
 
     RocCurveDisplay.from_predictions( y, scores, name="", color="darkorange",)
 
-    plt.plot([0, 1], [0, 1], "k--", label="chance level (AUC = 0.5)")
+    ns_probs = [0 for _ in range(len(y))]
+    ns_auc = roc_auc_score(y, ns_probs)
+    ns_fpr, ns_tpr, _ = roc_curve(y, ns_probs)
+
+    plt.plot(ns_fpr, ns_tpr, "k--", label=f"chance level (AUC = {ns_auc})")
     plt.axis("square")
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
     plt.title("OOD Detetection on CIFAR 10")
     plt.legend()
-    plt.show()
+    #plt.show()
+    plt.savefig(f'./plots/ROC_{metric}.png')
+    plt.close()
     return
 
 def plot_PrecisionRecall(logits_ID, logits_OOD, metric):
@@ -147,19 +153,36 @@ def plot_PrecisionRecall(logits_ID, logits_OOD, metric):
 
     scores = list_ID_ + list_OOD_
 
-    no_skill = len(logits_ID) / (len(logits_ID) + len(logits_OOD))
+    no_skill = len(logits_OOD) / (len(logits_ID) + len(logits_OOD))
     PrecisionRecallDisplay.from_predictions(y, scores, name="")
     plt.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
     plt.title("OOD Detetection on CIFAR 10")
-    plt.show()     
+    plt.legend()
+    #plt.show()
+    plt.savefig(f'./plots/Precision_Recall_{metric}.png')
+    plt.close()     
     return
 
-def plot_histograms(x, y):
+def plot_histograms(logits_ID, logits_OOD, metric):
+
+    if metric == "mean":
+        x = logits_ID.mean(1) 
+        y = logits_OOD.mean(1)
+    if metric == "max":
+        x = logits_ID.max(1) 
+        y = logits_OOD.max(1)
+    if metric == "var":
+        x = logits_ID.var(1) 
+        y = logits_OOD.var(1)
+    
     _ = plt.hist(x, 50, density=True, alpha=0.5, label='ID')
     _ = plt.hist(y, 50, density=True, alpha=0.5, label='OOD')
     plt.legend()
     plt.title("OOD Detetection on CIFAR 10")
-    plt.show()
+    #plt.show()
+    plt.savefig(f'./plots/Histogram_{metric}.png')
+    plt.close()
+    return
 
 def select_subset(dataset, label_list):
     samples = []
@@ -174,12 +197,14 @@ def select_subset(dataset, label_list):
     newset = torch.utils.data.TensorDataset(samples, labels)
     return newset
 
-def plot_confusion_matrix(y_true, y_pred, labels):
+def plot_confusion_matrix(y_true, y_pred, labels, iterations):
     cm = confusion_matrix(y_true, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                                display_labels=labels)
     disp.plot()
-    plt.show()
+    #plt.show()
+    plt.savefig(f'./plots/Confusion_matrix_it_{iterations}.png')
+    plt.close()
     return
 
 

@@ -64,13 +64,16 @@ def OOD_(model, id_loader, ood_loader, device):
     logits_ID = collect_logits(model, id_loader, device)
     logits_OOD = collect_logits(model, ood_loader, device)
 
-    plot_histograms(logits_ID.max(1), logits_OOD.max(1))
-    plot_histograms(logits_ID.var(1), logits_OOD.var(1))
-    plot_histograms(logits_ID.mean(1), logits_OOD.mean(1))
+    plot_histograms(logits_ID, logits_OOD, "max")
+    plot_histograms(logits_ID, logits_OOD, "var")
+    plot_histograms(logits_ID, logits_OOD, "mean")
+
     plot_ROC(logits_ID, logits_OOD, "max")
     plot_PrecisionRecall(logits_ID, logits_OOD, "max")
+
     plot_ROC(logits_ID, logits_OOD, "var")
     plot_PrecisionRecall(logits_ID, logits_OOD, "var")
+
     plot_ROC(logits_ID, logits_OOD, "mean")
     plot_PrecisionRecall(logits_ID, logits_OOD, "mean")
 
