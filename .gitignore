@@ -1,0 +1,7 @@
+__pycache__
+
+*.pt
+data/
+model_weights/
+wandb/
+
