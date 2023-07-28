@@ -230,7 +230,7 @@ The future of Artificial Intelligence is coming up. But the real revolution has 
 According toGerman research chief Andreas Thorne (d. 2005), "we
 ```
 
-This last example is more human-like. This decoding method is Top-k, the one used in GPT2.
+This last method produce more complex and human-like sentence. This decoding method is Top-k, the one used in GPT2.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
