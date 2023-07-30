@@ -5,3 +5,5 @@ data/
 model_weights/*
 wandb/
 
+cam_results/*.png
+adv_samples/*.png
