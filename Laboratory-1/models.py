@@ -138,7 +138,7 @@ class ResNet_Layer(nn.Module):
             for i in range(0, len(self.block), self.residual_step):
                 proj = self.projections[-count](x)
                 for j in range(i, i + self.residual_step):
-                    if j != (i + self.residual_step):# - 1):
+                    if j != (i + self.residual_step - 1):
                         x = self.block[j](x)
                     else:
                         x = self.block[j](x, proj)
